@@ -5,15 +5,26 @@ import {
   BarChart, 
   Users, 
   Package, 
-  TrendingUp, 
+  TrendingUp,
   Calendar,
-  DollarSign
+  DollarSign,
+  Plus
 } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const AdminDashboard = () => {
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold text-neutral-800 mb-8">Panel de Control</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-neutral-800">Panel de Control</h1>
+        <Link to="/admin/package-builder">
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            Nuevo Paquete
+          </Button>
+        </Link>
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <Card className="bg-white shadow-sm">
@@ -55,8 +66,6 @@ const AdminDashboard = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Resto del dashboard se implementará en futuras iteraciones */}
     </div>
   );
 };
