@@ -10,6 +10,7 @@ import {
   Plane,
   ArrowRight
 } from 'lucide-react';
+import Bot from '@/components/icons/Bot';
 
 const TravelArchitect = () => {
   return (
