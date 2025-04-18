@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { 
   Search, 
@@ -7,13 +8,21 @@ import {
   X, 
   Globe, 
   User, 
-  Heart 
+  Heart,
+  LogOut
 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Navbar = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
+  const [userProfile, setUserProfile] = useState<any>(null);
+  
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
@@ -26,6 +35,50 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+  
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (!user) return;
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching user profile:', error);
+        return;
+      }
+      
+      if (data) {
+        setUserProfile(data);
+      }
+    };
+    
+    fetchUserProfile();
+  }, [user]);
+  
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      toast.success('Sesión cerrada exitosamente');
+      navigate('/');
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+  
+  const getInitials = (name: string) => {
+    if (!name) return 'U';
+    return name
+      .split(' ')
+      .map(part => part[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
 
   return (
     <header 
@@ -38,26 +91,26 @@ const Navbar = () => {
       <div className="container mx-auto flex justify-between items-center px-4">
         {/* Logo */}
         <div className="flex items-center">
-          <a href="/" className="flex items-center">
-            <span className={`text-2xl font-bold ${isScrolled ? 'text-primary' : 'text-white'}`}>
+          <Link to="/" className="flex items-center">
+            <span className={`text-2xl font-bold ${isScrolled ? 'text-marine' : 'text-white'}`}>
               OLiver<span className="text-accent">Travels</span>
             </span>
-          </a>
+          </Link>
         </div>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6">
           <a href="#destinations" className={`${isScrolled ? 'text-dark' : 'text-white'} hover:text-accent transition-colors`}>
-            Destinations
+            Destinos
           </a>
           <a href="#packages" className={`${isScrolled ? 'text-dark' : 'text-white'} hover:text-accent transition-colors`}>
-            Packages
+            Paquetes
           </a>
-          <a href="#experiences" className={`${isScrolled ? 'text-dark' : 'text-white'} hover:text-accent transition-colors`}>
-            Experiences
-          </a>
+          <Link to="/virtual-office" className={`${isScrolled ? 'text-dark' : 'text-white'} hover:text-accent transition-colors`}>
+            Oficina Virtual
+          </Link>
           <a href="#about" className={`${isScrolled ? 'text-dark' : 'text-white'} hover:text-accent transition-colors`}>
-            About
+            Nosotros
           </a>
         </nav>
 
@@ -72,12 +125,36 @@ const Navbar = () => {
           <Button variant="ghost" size="icon" className={isScrolled ? 'text-dark' : 'text-white'}>
             <Heart className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" className={isScrolled ? 'text-dark' : 'text-white'}>
-            <User className="h-5 w-5" />
-          </Button>
-          <Button className="bg-secondary hover:bg-secondary-600">
-            Book Now
-          </Button>
+          
+          {user ? (
+            <div className="relative flex items-center">
+              <Avatar className="h-8 w-8 cursor-pointer">
+                <AvatarImage src={userProfile?.avatar_url || ''} />
+                <AvatarFallback className="bg-marine text-white">
+                  {getInitials(userProfile?.full_name || user.email || '')}
+                </AvatarFallback>
+              </Avatar>
+              
+              <div className="ml-2">
+                <Button 
+                  variant="ghost" 
+                  onClick={handleLogout}
+                  className={`text-xs ${isScrolled ? 'text-dark' : 'text-white'} hover:bg-red-600 hover:text-white p-1`}
+                >
+                  <LogOut className="h-4 w-4 mr-1" /> 
+                  Salir
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Button 
+              className="bg-marine hover:bg-marine-600"
+              onClick={() => navigate('/auth')}
+            >
+              <User className="h-4 w-4 mr-2" />
+              Ingresar
+            </Button>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -109,20 +186,47 @@ const Navbar = () => {
             
             <div className="flex flex-col items-center justify-center flex-grow space-y-8 p-4">
               <a href="#destinations" className="text-white text-xl hover:text-accent transition-colors">
-                Destinations
+                Destinos
               </a>
               <a href="#packages" className="text-white text-xl hover:text-accent transition-colors">
-                Packages
+                Paquetes
               </a>
-              <a href="#experiences" className="text-white text-xl hover:text-accent transition-colors">
-                Experiences
-              </a>
+              <Link to="/virtual-office" className="text-white text-xl hover:text-accent transition-colors">
+                Oficina Virtual
+              </Link>
               <a href="#about" className="text-white text-xl hover:text-accent transition-colors">
-                About
+                Nosotros
               </a>
-              <Button className="bg-secondary hover:bg-secondary-600 mt-4 w-full">
-                Book Now
-              </Button>
+              
+              {user ? (
+                <div className="flex flex-col items-center space-y-4">
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src={userProfile?.avatar_url || ''} />
+                    <AvatarFallback className="bg-marine text-white text-lg">
+                      {getInitials(userProfile?.full_name || user.email || '')}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-white">{userProfile?.full_name || user.email}</span>
+                  <Button 
+                    onClick={handleLogout}
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" /> 
+                    Cerrar Sesión
+                  </Button>
+                </div>
+              ) : (
+                <Button 
+                  className="bg-marine hover:bg-marine-600 mt-4 w-full"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    navigate('/auth');
+                  }}
+                >
+                  <User className="h-4 w-4 mr-2" />
+                  Ingresar
+                </Button>
+              )}
             </div>
           </div>
         )}

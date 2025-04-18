@@ -9,6 +9,7 @@ import PackageBuilder from "./pages/admin/PackageBuilder";
 import AuthForm from "./components/auth/AuthForm";
 import AuthGuard from "./components/auth/AuthGuard";
 import NotFound from "./pages/NotFound";
+import VirtualOfficePage from "./pages/VirtualOfficePage";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<AuthForm />} />
+          <Route path="/virtual-office" element={<VirtualOfficePage />} />
           <Route path="/admin" element={
             <AuthGuard>
               <AdminDashboard />
