@@ -16,6 +16,10 @@ import {
 } from "@/components/ui/select";
 import { MapPin, Calendar, DollarSign } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/integrations/supabase/types';
+
+// Define the type for package types based on the Supabase schema
+type PackageType = Database['public']['Enums']['package_type'];
 
 const PackageBuilder = () => {
   const navigate = useNavigate();
@@ -26,7 +30,7 @@ const PackageBuilder = () => {
     destination: '',
     duration: '',
     price: '',
-    type: ''
+    type: '' as PackageType | ''
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,18 +38,21 @@ const PackageBuilder = () => {
     setLoading(true);
 
     try {
+      // Ensure type is a valid PackageType before inserting
+      if (!formData.type) {
+        throw new Error('Debe seleccionar un tipo de paquete');
+      }
+
       const { error } = await supabase
         .from('packages')
-        .insert([
-          {
-            name: formData.name,
-            description: formData.description,
-            destination: formData.destination,
-            duration: parseInt(formData.duration),
-            price: parseFloat(formData.price),
-            type: formData.type
-          }
-        ]);
+        .insert({
+          name: formData.name,
+          description: formData.description,
+          destination: formData.destination,
+          duration: parseInt(formData.duration),
+          price: parseFloat(formData.price),
+          type: formData.type as PackageType
+        });
 
       if (error) throw error;
 
@@ -111,7 +118,10 @@ const PackageBuilder = () => {
                 <Label htmlFor="duration">Duración</Label>
                 <div className="relative">
                   <Calendar className="absolute left-2 top-3 h-4 w-4 text-neutral-500" />
-                  <Select value={formData.duration} onValueChange={(value) => setFormData({ ...formData, duration: value })}>
+                  <Select 
+                    value={formData.duration} 
+                    onValueChange={(value) => setFormData({ ...formData, duration: value })}
+                  >
                     <SelectTrigger id="duration" className="pl-8">
                       <SelectValue placeholder="Selecciona la duración" />
                     </SelectTrigger>
@@ -144,7 +154,10 @@ const PackageBuilder = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="type">Tipo de Paquete</Label>
-                <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
+                <Select 
+                  value={formData.type} 
+                  onValueChange={(value) => setFormData({ ...formData, type: value as PackageType })}
+                >
                   <SelectTrigger id="type">
                     <SelectValue placeholder="Selecciona el tipo" />
                   </SelectTrigger>
