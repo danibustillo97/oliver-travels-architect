@@ -9,7 +9,66 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      packages: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          destination: string
+          duration: number
+          id: string
+          name: string
+          price: number
+          type: Database["public"]["Enums"]["package_type"]
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          destination: string
+          duration: number
+          id?: string
+          name: string
+          price: number
+          type: Database["public"]["Enums"]["package_type"]
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          destination?: string
+          duration?: number
+          id?: string
+          name?: string
+          price?: number
+          type?: Database["public"]["Enums"]["package_type"]
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          full_name: string | null
+          id: string
+          role: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          id: string
+          role?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          id?: string
+          role?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +77,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      package_type: "adventure" | "cultural" | "relax" | "family" | "luxury"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +192,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      package_type: ["adventure", "cultural", "relax", "family", "luxury"],
+    },
   },
 } as const
