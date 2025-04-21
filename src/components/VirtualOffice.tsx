@@ -1,12 +1,10 @@
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { 
   PerspectiveCamera, 
   Environment, 
   OrbitControls,
-  useGLTF,
-  useAnimations,
   Html,
   Stars,
   Box,
@@ -16,11 +14,11 @@ import {
 import { Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { MessageCircleQuestion } from 'lucide-react';
-import { Vector3 } from 'three';
+import { Vector3, Euler } from 'three';
 
 // Define TypeScript interfaces for clarity
 interface AssistantProps {
-  position: Vector3 | [number, number, number];
+  position: [number, number, number];
   name: string;
   role: string;
   onClick: () => void;
@@ -35,7 +33,6 @@ interface AssistantInfo {
 const VirtualAssistant = ({ position, name, role, onClick }: AssistantProps) => {
   const group = useRef(null);
   
-  // Instead of trying to load an external model, let's create a simple 3D avatar
   return (
     <group ref={group} position={position} scale={0.7} onClick={onClick}>
       {/* Simple robot-like shape */}
@@ -68,26 +65,25 @@ const VirtualAssistant = ({ position, name, role, onClick }: AssistantProps) => 
 };
 
 const Office = () => {
-  // Instead of loading an external model, let's create a simple office environment
   return (
     <group position={[0, -1, 0]}>
       {/* Floor */}
-      <Box args={[10, 0.2, 10]} position={[0, -0.1, 0]} receiveShadow>
+      <Box args={[10, 0.2, 10]} position={[0, -0.1, 0]}>
         <meshStandardMaterial color="#e0e0e0" />
       </Box>
       
       {/* Desk */}
-      <Box args={[3, 0.1, 1.5]} position={[0, 0.7, 0]} castShadow receiveShadow>
+      <Box args={[3, 0.1, 1.5]} position={[0, 0.7, 0]}>
         <meshStandardMaterial color="#8B4513" />
       </Box>
       
       {/* Chair base */}
-      <Box args={[0.8, 0.1, 0.8]} position={[0, 0.3, 1.5]} castShadow receiveShadow>
+      <Box args={[0.8, 0.1, 0.8]} position={[0, 0.3, 1.5]}>
         <meshStandardMaterial color="#2c3e50" />
       </Box>
       
       {/* Chair back */}
-      <Box args={[0.7, 1, 0.1]} position={[0, 1, 1.8]} castShadow receiveShadow>
+      <Box args={[0.7, 1, 0.1]} position={[0, 1, 1.8]}>
         <meshStandardMaterial color="#2c3e50" />
       </Box>
       
@@ -129,8 +125,6 @@ const VirtualOffice = () => {
           position={[10, 10, 5]} 
           intensity={1} 
           castShadow 
-          shadow-mapSize-width={1024} 
-          shadow-mapSize-height={1024} 
         />
         
         <Suspense fallback={null}>
