@@ -1,0 +1,65 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Asegúrate de copiar aquí el contenido del archivo index.css original */
+
+/* Estilos para gradientes y efectos */
+.hero-gradient {
+  background-image: url('/images/hero-bg.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.section-gradient {
+  background: linear-gradient(to bottom, #f9fafb 0%, #ffffff 100%);
+}
+
+.card-hover-effect {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover-effect:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Animaciones */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 1s ease forwards;
+}
+
+.animate-fade-in-slow {
+  animation: fade-in 1.5s ease 0.5s forwards;
+  opacity: 0;
+}
+
+/* Variables de color personalizadas */
+:root {
+  --primary: #2563eb;
+  --primary-600: #1d4ed8;
+  --primary-50: #eff6ff;
+  --secondary: #10b981;
+  --accent: #f59e0b;
+  --accent-600: #d97706;
+  --accent-50: #fffbeb;
+  --dark: #1f2937;
+  --marine: #0369a1;
+  --marine-600: #0284c7;
+}

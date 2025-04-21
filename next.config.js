@@ -3,7 +3,7 @@
 const nextConfig = {
   reactStrictMode: true,
   typescript: {
-    // Use existing tsconfig
+    // Usar tsconfig existente
     tsconfigPath: './tsconfig.json'
   },
   webpack: (config) => {

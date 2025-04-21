@@ -1,6 +1,9 @@
 
+"use client";
+
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { 
   Search, 
@@ -18,7 +21,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Navbar = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
@@ -47,7 +50,7 @@ const Navbar = () => {
         .single();
       
       if (error) {
-        console.error('Error fetching user profile:', error);
+        console.error('Error al cargar perfil de usuario:', error);
         return;
       }
       
@@ -64,7 +67,7 @@ const Navbar = () => {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       toast.success('Sesión cerrada exitosamente');
-      navigate('/');
+      router.push('/');
     } catch (error: any) {
       toast.error(error.message);
     }
@@ -91,7 +94,7 @@ const Navbar = () => {
       <div className="container mx-auto flex justify-between items-center px-4">
         {/* Logo */}
         <div className="flex items-center">
-          <Link to="/" className="flex items-center">
+          <Link href="/" className="flex items-center">
             <span className={`text-2xl font-bold ${isScrolled ? 'text-marine' : 'text-white'}`}>
               OLiver<span className="text-accent">Travels</span>
             </span>
@@ -106,7 +109,7 @@ const Navbar = () => {
           <a href="#packages" className={`${isScrolled ? 'text-dark' : 'text-white'} hover:text-accent transition-colors`}>
             Paquetes
           </a>
-          <Link to="/virtual-office" className={`${isScrolled ? 'text-dark' : 'text-white'} hover:text-accent transition-colors`}>
+          <Link href="/virtual-office" className={`${isScrolled ? 'text-dark' : 'text-white'} hover:text-accent transition-colors`}>
             Oficina Virtual
           </Link>
           <a href="#about" className={`${isScrolled ? 'text-dark' : 'text-white'} hover:text-accent transition-colors`}>
@@ -149,7 +152,7 @@ const Navbar = () => {
           ) : (
             <Button 
               className="bg-marine hover:bg-marine-600"
-              onClick={() => navigate('/auth')}
+              onClick={() => router.push('/auth')}
             >
               <User className="h-4 w-4 mr-2" />
               Ingresar
@@ -191,7 +194,10 @@ const Navbar = () => {
               <a href="#packages" className="text-white text-xl hover:text-accent transition-colors">
                 Paquetes
               </a>
-              <Link to="/virtual-office" className="text-white text-xl hover:text-accent transition-colors">
+              <Link href="/virtual-office" 
+                className="text-white text-xl hover:text-accent transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
                 Oficina Virtual
               </Link>
               <a href="#about" className="text-white text-xl hover:text-accent transition-colors">
@@ -220,7 +226,7 @@ const Navbar = () => {
                   className="bg-marine hover:bg-marine-600 mt-4 w-full"
                   onClick={() => {
                     setMobileMenuOpen(false);
-                    navigate('/auth');
+                    router.push('/auth');
                   }}
                 >
                   <User className="h-4 w-4 mr-2" />
