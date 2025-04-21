@@ -6,15 +6,11 @@ import {
   Environment, 
   OrbitControls,
   Html,
-  Stars,
-  Box,
-  Sphere,
-  Torus
+  Stars
 } from '@react-three/drei';
 import { Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { MessageCircleQuestion } from 'lucide-react';
-import { Vector3, Euler } from 'three';
 
 // Define TypeScript interfaces for clarity
 interface AssistantProps {
@@ -30,6 +26,36 @@ interface AssistantInfo {
   description: string;
 }
 
+// Simple component for creating a box
+const SimpleBox = ({ position, size, color }) => {
+  return (
+    <mesh position={position}>
+      <boxGeometry args={size} />
+      <meshStandardMaterial color={color} />
+    </mesh>
+  );
+};
+
+// Simple component for creating a sphere
+const SimpleSphere = ({ position, radius, color }) => {
+  return (
+    <mesh position={position}>
+      <sphereGeometry args={[radius, 32, 32]} />
+      <meshStandardMaterial color={color} />
+    </mesh>
+  );
+};
+
+// Simple component for creating a torus
+const SimpleTorus = ({ position, args, color, rotation }) => {
+  return (
+    <mesh position={position} rotation={rotation || [0, 0, 0]}>
+      <torusGeometry args={args} />
+      <meshStandardMaterial color={color} />
+    </mesh>
+  );
+};
+
 const VirtualAssistant = ({ position, name, role, onClick }: AssistantProps) => {
   const group = useRef(null);
   
@@ -38,20 +64,12 @@ const VirtualAssistant = ({ position, name, role, onClick }: AssistantProps) => 
       {/* Simple robot-like shape */}
       <group>
         {/* Body */}
-        <Box args={[0.5, 0.8, 0.4]} position={[0, 0, 0]}>
-          <meshStandardMaterial color="#3498db" />
-        </Box>
+        <SimpleBox position={[0, 0, 0]} size={[0.5, 0.8, 0.4]} color="#3498db" />
         {/* Head */}
-        <Sphere args={[0.3]} position={[0, 0.6, 0]}>
-          <meshStandardMaterial color="#2980b9" />
-        </Sphere>
+        <SimpleSphere position={[0, 0.6, 0]} radius={0.3} color="#2980b9" />
         {/* Eyes */}
-        <Box args={[0.05, 0.05, 0.05]} position={[-0.1, 0.65, 0.25]}>
-          <meshStandardMaterial color="#ecf0f1" />
-        </Box>
-        <Box args={[0.05, 0.05, 0.05]} position={[0.1, 0.65, 0.25]}>
-          <meshStandardMaterial color="#ecf0f1" />
-        </Box>
+        <SimpleBox position={[-0.1, 0.65, 0.25]} size={[0.05, 0.05, 0.05]} color="#ecf0f1" />
+        <SimpleBox position={[0.1, 0.65, 0.25]} size={[0.05, 0.05, 0.05]} color="#ecf0f1" />
       </group>
       
       <Html position={[0, 1.2, 0]} center>
@@ -68,33 +86,30 @@ const Office = () => {
   return (
     <group position={[0, -1, 0]}>
       {/* Floor */}
-      <Box args={[10, 0.2, 10]} position={[0, -0.1, 0]}>
-        <meshStandardMaterial color="#e0e0e0" />
-      </Box>
+      <SimpleBox position={[0, -0.1, 0]} size={[10, 0.2, 10]} color="#e0e0e0" />
       
       {/* Desk */}
-      <Box args={[3, 0.1, 1.5]} position={[0, 0.7, 0]}>
-        <meshStandardMaterial color="#8B4513" />
-      </Box>
+      <SimpleBox position={[0, 0.7, 0]} size={[3, 0.1, 1.5]} color="#8B4513" />
       
       {/* Chair base */}
-      <Box args={[0.8, 0.1, 0.8]} position={[0, 0.3, 1.5]}>
-        <meshStandardMaterial color="#2c3e50" />
-      </Box>
+      <SimpleBox position={[0, 0.3, 1.5]} size={[0.8, 0.1, 0.8]} color="#2c3e50" />
       
       {/* Chair back */}
-      <Box args={[0.7, 1, 0.1]} position={[0, 1, 1.8]}>
-        <meshStandardMaterial color="#2c3e50" />
-      </Box>
+      <SimpleBox position={[0, 1, 1.8]} size={[0.7, 1, 0.1]} color="#2c3e50" />
       
       {/* Decorative elements */}
-      <Torus args={[0.3, 0.1, 16, 32]} position={[-1, 0.8, 0]} rotation={[Math.PI/2, 0, 0]}>
-        <meshStandardMaterial color="#e74c3c" />
-      </Torus>
+      <SimpleTorus 
+        position={[-1, 0.8, 0]} 
+        args={[0.3, 0.1, 16, 32]} 
+        color="#e74c3c" 
+        rotation={[Math.PI/2, 0, 0]} 
+      />
       
-      <Box args={[0.3, 0.3, 0.3]} position={[1, 0.85, 0]} rotation={[0.5, 0.5, 0]}>
-        <meshStandardMaterial color="#3498db" />
-      </Box>
+      <SimpleBox 
+        position={[1, 0.85, 0]} 
+        size={[0.3, 0.3, 0.3]} 
+        color="#3498db" 
+      />
     </group>
   );
 };
@@ -108,7 +123,7 @@ const VirtualOffice = () => {
   
   return (
     <div className="relative w-full h-full">
-      <Canvas shadows>
+      <Canvas>
         <color attach="background" args={['#f0f8ff']} />
         
         <PerspectiveCamera makeDefault position={[0, 2, 5]} />
@@ -121,11 +136,7 @@ const VirtualOffice = () => {
         />
         
         <ambientLight intensity={0.5} />
-        <directionalLight 
-          position={[10, 10, 5]} 
-          intensity={1} 
-          castShadow 
-        />
+        <directionalLight position={[10, 10, 5]} intensity={1} />
         
         <Suspense fallback={null}>
           <Office />
