@@ -8,34 +8,56 @@ import {
   useGLTF,
   useAnimations,
   Html,
-  Stars
+  Stars,
+  Box,
+  Sphere,
+  Torus
 } from '@react-three/drei';
 import { Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { MessageCircleQuestion } from 'lucide-react';
+import { Vector3 } from 'three';
 
-const VirtualAssistant = ({ position = [0, 0, 0], name, role, onClick }) => {
-  const group = useRef();
-  // Placeholder model - in a real implementation, you'd use actual avatar models
-  const { scene, animations } = useGLTF('https://vazxmixjsiawhamofees.supabase.co/storage/v1/object/public/models/robot/model.gltf');
-  const { actions } = useAnimations(animations, group);
+// Define TypeScript interfaces for clarity
+interface AssistantProps {
+  position: Vector3 | [number, number, number];
+  name: string;
+  role: string;
+  onClick: () => void;
+}
+
+interface AssistantInfo {
+  name: string;
+  role: string;
+  description: string;
+}
+
+const VirtualAssistant = ({ position, name, role, onClick }: AssistantProps) => {
+  const group = useRef(null);
   
-  useEffect(() => {
-    // Play idle animation if available
-    const idle = actions["Idle"] || actions["idle"] || Object.values(actions)[0];
-    if (idle) {
-      idle.reset().fadeIn(0.5).play();
-    }
-    
-    return () => {
-      if (idle) idle.fadeOut(0.5);
-    };
-  }, [actions]);
-  
+  // Instead of trying to load an external model, let's create a simple 3D avatar
   return (
     <group ref={group} position={position} scale={0.7} onClick={onClick}>
-      <primitive object={scene.clone()} />
-      <Html position={[0, 2.2, 0]} center>
+      {/* Simple robot-like shape */}
+      <group>
+        {/* Body */}
+        <Box args={[0.5, 0.8, 0.4]} position={[0, 0, 0]}>
+          <meshStandardMaterial color="#3498db" />
+        </Box>
+        {/* Head */}
+        <Sphere args={[0.3]} position={[0, 0.6, 0]}>
+          <meshStandardMaterial color="#2980b9" />
+        </Sphere>
+        {/* Eyes */}
+        <Box args={[0.05, 0.05, 0.05]} position={[-0.1, 0.65, 0.25]}>
+          <meshStandardMaterial color="#ecf0f1" />
+        </Box>
+        <Box args={[0.05, 0.05, 0.05]} position={[0.1, 0.65, 0.25]}>
+          <meshStandardMaterial color="#ecf0f1" />
+        </Box>
+      </group>
+      
+      <Html position={[0, 1.2, 0]} center>
         <div className="bg-white px-4 py-2 rounded-lg shadow-lg text-center pointer-events-none transform -translate-y-1/2">
           <p className="text-primary font-bold whitespace-nowrap">{name}</p>
           <p className="text-sm text-gray-600 whitespace-nowrap">{role}</p>
@@ -46,18 +68,45 @@ const VirtualAssistant = ({ position = [0, 0, 0], name, role, onClick }) => {
 };
 
 const Office = () => {
-  // Placeholder for an office model
-  const { scene } = useGLTF('https://vazxmixjsiawhamofees.supabase.co/storage/v1/object/public/models/office-chair/model.gltf');
-  
+  // Instead of loading an external model, let's create a simple office environment
   return (
-    <primitive object={scene} scale={1.5} position={[0, -1, 0]} />
+    <group position={[0, -1, 0]}>
+      {/* Floor */}
+      <Box args={[10, 0.2, 10]} position={[0, -0.1, 0]} receiveShadow>
+        <meshStandardMaterial color="#e0e0e0" />
+      </Box>
+      
+      {/* Desk */}
+      <Box args={[3, 0.1, 1.5]} position={[0, 0.7, 0]} castShadow receiveShadow>
+        <meshStandardMaterial color="#8B4513" />
+      </Box>
+      
+      {/* Chair base */}
+      <Box args={[0.8, 0.1, 0.8]} position={[0, 0.3, 1.5]} castShadow receiveShadow>
+        <meshStandardMaterial color="#2c3e50" />
+      </Box>
+      
+      {/* Chair back */}
+      <Box args={[0.7, 1, 0.1]} position={[0, 1, 1.8]} castShadow receiveShadow>
+        <meshStandardMaterial color="#2c3e50" />
+      </Box>
+      
+      {/* Decorative elements */}
+      <Torus args={[0.3, 0.1, 16, 32]} position={[-1, 0.8, 0]} rotation={[Math.PI/2, 0, 0]}>
+        <meshStandardMaterial color="#e74c3c" />
+      </Torus>
+      
+      <Box args={[0.3, 0.3, 0.3]} position={[1, 0.85, 0]} rotation={[0.5, 0.5, 0]}>
+        <meshStandardMaterial color="#3498db" />
+      </Box>
+    </group>
   );
 };
 
 const VirtualOffice = () => {
-  const [activeAssistant, setActiveAssistant] = useState(null);
+  const [activeAssistant, setActiveAssistant] = useState<AssistantInfo | null>(null);
   
-  const handleAssistantClick = (assistant) => {
+  const handleAssistantClick = (assistant: AssistantInfo) => {
     setActiveAssistant(assistant);
   };
   
