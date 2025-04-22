@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,7 @@ import { Check, X, Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 const AuthForm = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { user } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -30,7 +30,7 @@ const AuthForm = () => {
   useEffect(() => {
     // If user is already logged in, redirect to home page
     if (user) {
-      navigate('/');
+      router.push('/');
     }
     
     // Check password requirements
@@ -42,7 +42,7 @@ const AuthForm = () => {
         lowercase: /[a-z]/.test(formData.password)
       });
     }
-  }, [user, navigate, formData.password]);
+  }, [user, router, formData.password]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,9 +66,9 @@ const AuthForm = () => {
           .single();
           
         if (data?.role === 'admin' || data?.role === 'manager') {
-          navigate('/admin');
+          router.push('/admin');
         } else {
-          navigate('/');
+          router.push('/');
         }
       } else {
         // Validate password requirements
@@ -91,7 +91,7 @@ const AuthForm = () => {
         });
         if (error) throw error;
         toast.success('¡Cuenta creada exitosamente!');
-        navigate('/');
+        router.push('/');
       }
     } catch (error: any) {
       toast.error(error.message);
